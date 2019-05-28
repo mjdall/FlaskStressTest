@@ -1,0 +1,14 @@
+#!/bin/sh
+
+export FLASK_ENV=testing
+export APP_URL="http://127.0.0.1:13361"
+
+# docker-compose down || true
+# docker-compose up -d
+
+docker build ./prime_server_test/ -t prime_server_test
+docker run -it --network="host" -e APP_URL="$APP_URL" prime_server_test:latest
+
+# docker-compose down
+
+exit 0

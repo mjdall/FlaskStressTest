@@ -15,9 +15,7 @@ PRIME_HASH = 'PrimeNumbers'
 CONN_RETRIES = 5
 
 
-def retry_redis_method(redis_method,
-                       retries=CONN_RETRIES,
-                       error_log_msg=''):
+def retry_redis_method(redis_method, retries=CONN_RETRIES, error_log_msg=''):
     """
     Retries `redis_method` `retries` number of times.
     Will retry when a ConnectionError is thrown.
