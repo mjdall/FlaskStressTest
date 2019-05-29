@@ -5,7 +5,7 @@ Black and White box tests for /isPrime/{number} route
 """
 
 import requests
-from test_setup import get_is_prime_route, get_random_primes
+from test_util import get_is_prime_route, get_random_primes
 
 PRIME_ROUTE = get_is_prime_route()
 

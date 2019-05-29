@@ -107,7 +107,9 @@ def get_cached_primes():
         return jsonify([])
 
     # primes are stored as prime:prime, so just get the keys
-    decoded_primes = [prime.decode('utf-8') for prime in raw_primes.keys()]
+    decoded_primes = [
+        int(prime.decode('utf-8')) for prime in raw_primes.keys()
+    ]
 
     return jsonify(decoded_primes)
 

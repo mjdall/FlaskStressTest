@@ -1,14 +1,33 @@
 #!/bin/sh
 
-export FLASK_ENV=testing
-export APP_URL="http://127.0.0.1:13361"
+HOST="127.0.0.1"
+PORT="13361"
+SERVER_HEALTH_TIMEOUT="60"
 
-# docker-compose down || true
-# docker-compose up -d
+export FLASK_ENV=testing
+export APP_URL="http://$HOST:$PORT"
+
+# if running, pull it down
+docker-compose down || true
+docker-compose build && docker-compose up -d
 
 docker build ./prime_server_test/ -t prime_server_test
-docker run -it --network="host" -e APP_URL="$APP_URL" prime_server_test:latest
 
-# docker-compose down
+# wait for the flask server to be available before running the container
+SUCCESS="false"
+EXIT_CODE="1"
 
-exit 0
+echo "\nwaiting "$SERVER_HEALTH_TIMEOUT" seconds for server to be active\n"
+
+# wait 60s for the server to start up and return a 200 status code from the isPrime route
+timeout "$SERVER_HEALTH_TIMEOUT" bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' "$APP_URL/isPrime/1")" != "200" ]]; do sleep 5; done' \
+    && SUCCESS="true" \
+    || echo "server didn't start in time\n"
+
+if [ "$SUCCESS" = true ]; then
+    docker run -it --network="host" -e APP_URL="$APP_URL" prime_server_test:latest && EXIT_CODE="0" || true
+fi
+
+docker-compose down
+
+exit "$EXIT_CODE"
