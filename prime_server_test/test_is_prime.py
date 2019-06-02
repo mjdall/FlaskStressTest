@@ -17,7 +17,7 @@ def test_valid_primes():
     Asserts resp text in format `{number} is prime`.
     """
     # always test 2 as it's a boundary value
-    valid_primes = [2] + get_random_primes(5)
+    valid_primes = [2] + get_random_primes(50)
     for prime in valid_primes:
         resp = requests.get(PRIME_ROUTE + str(prime))
 

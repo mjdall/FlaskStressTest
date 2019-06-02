@@ -7,6 +7,8 @@ Flask Server for check Prime Numbers.
 import sys
 import time
 import redis
+import random
+
 from flask import Flask, jsonify
 
 app = Flask(__name__)
@@ -59,13 +61,43 @@ def add_prime(prime_number):
         error_log_msg='error connecting to redis while caching prime')
 
 
-def is_prime_number(number):
-    """Checks if a number is a prime number."""
-    if number < 2:
+def is_prime_number(n):
+    """
+    Miller-Rabin primality test.
+    see: https://rosettacode.org/wiki/Miller%E2%80%93Rabin_primality_test#Python
+
+    A return value of False means n is certainly not prime. A return value of
+    True means n is very likely a prime.
+    """
+    if n != int(n):
+        return False
+    n = int(n)
+
+    # Miller-Rabin test for prime
+    if n in {0, 1, 4, 6, 8, 9}:
         return False
 
-    for y in range(2, number):
-        if not number % y:
+    if n in {2, 3, 5, 7}:
+        return True
+
+    s = 0
+    d = n - 1
+    while d % 2 == 0:
+        d >>= 1
+        s += 1
+    assert (2 ** s * d == n - 1)
+
+    def trial_composite(a):
+        if pow(a, d, n) == 1:
+            return False
+        for i in range(s):
+            if pow(a, 2 ** i * d, n) == n - 1:
+                return False
+        return True
+
+    for i in range(8):  # number of trials
+        a = random.randrange(2, n)
+        if trial_composite(a):
             return False
 
     return True
@@ -113,6 +145,8 @@ def get_cached_primes():
 
     return jsonify(decoded_primes)
 
+
+# add_prime(2147483647)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

@@ -25,7 +25,12 @@ timeout "$SERVER_HEALTH_TIMEOUT" bash -c 'while [[ "$(curl -s -o /dev/null -w ''
     || echo "server didn't start in time\n"
 
 if [ "$SUCCESS" = true ]; then
-    docker run -it --network="host" -e APP_URL="$APP_URL" prime_server_test:latest && EXIT_CODE="0" || true
+    docker run -it --network="host" -e APP_URL="$APP_URL" prime_server_test:latest && EXIT_CODE="0" || SUCCESS="true"
+fi
+
+if [ "$EXIT_CODE" = "0" ]; then
+    echo "\nrunning strtess tests\n"
+    ./script/stress-test || EXIT_CODE="1"
 fi
 
 docker-compose down
