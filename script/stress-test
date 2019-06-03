@@ -1,1 +1,58 @@
-#!/bin/sh
+#!/bin/bash
+
+RAN_AS_ROOT=""
+if [ "$EUID" -eq 0 ]; then
+    RAN_AS_ROOT="true"
+fi
+
+# provide -f to clean
+if [[ ! -z "$1" && "$1" -eq "-f" ]]; then
+    echo "cleaning old reports"
+    "./script/clean"
+fi
+
+ARTIFACT_DIR=""$(pwd)"/stress_test/artifacts"
+REPORT_DIR=""$ARTIFACT_DIR"/test_reports"
+
+# we need to run as sudo to get vol perms back
+CHOWN_USER="$(cut -d/ -f3 <<<$ARTIFACT_DIR)"
+
+# control continuation with exit codes
+EXIT_CODE="1"
+
+# build the jmeter image
+docker build ./stress_test/. -t prime_stress_test \
+    && EXIT_CODE="2" \
+    || printf "\nerror building docker file\n"
+
+# if we built successfully, run stress tests
+if [[ "$EXIT_CODE" = "2" ]]; then
+    # todo: check ownership of the artifact dir
+    # or: just require sudo
+    docker run \
+    -v "$ARTIFACT_DIR":/testing/artifacts \
+    --network="host" \
+    prime_stress_test:latest \
+    && EXIT_CODE="$?"
+
+    printf "\ncontainer exited with exit code: \""$EXIT_CODE"\"\n"
+fi
+
+# we can chown on the artifacts dir to view in browser
+if [[ "$EXIT_CODE" -eq "0" && ! -z "$RAN_AS_ROOT" ]]; then
+    printf "changing volume ownership back\n"
+
+    # docker volumes get changed to root user:group
+    # we can't open that in browser - probably a better way for this
+    sudo chown "$CHOWN_USER":"$CHOWN_USER" "$ARTIFACT_DIR"
+    sudo chown "$CHOWN_USER":"$CHOWN_USER" "$ARTIFACT_DIR"/*
+    sudo chown "$CHOWN_USER":"$CHOWN_USER" "$ARTIFACT_DIR"/**/*
+
+    # open reports in browser
+    su "$CHOWN_USER" -c "./script/open_reports "$REPORT_DIR"" || EXIT_CODE="3"
+fi
+
+# 1=couldnt build, 2=could build but run failed
+# 3=couldnt open test reports
+# 0=success others=returned docker run exit code
+exit "$EXIT_CODE"

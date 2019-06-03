@@ -1,6 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 
-export FLASK_ENV=production
+if [[ ! -z "$FLASK_ENV" ]]; then
+    export FLASK_ENV=production
+fi
+
 docker-compose down || true
 docker-compose build
-docker-compose up
+docker-compose up -d

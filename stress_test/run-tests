@@ -1,0 +1,45 @@
+#!/bin/bash
+
+block_print() {
+    print="$1"
+    echo_len="${#print}"
+    echo ""
+    repeat_print "=" "$echo_len"
+    echo "$print"
+    repeat_print "=" "$echo_len"
+    echo ""
+}
+
+repeat_print() {
+    str="$1"
+    num="$2"
+    v=$(printf "%-${num}s" "$str")
+    echo "${v// /"$str"}"
+}
+
+ARTIFACTS_DIR="artifacts"
+TEST_REPORTS="$ARTIFACTS_DIR/test_reports"
+
+# mainly so i can run locally and clean up files easily
+# my internet is slow so docker images take forever to dl
+PATH="/home/morgan/software/uni/apache-jmeter-5.1.1/bin:$PATH"
+
+# so we can just write more tests and add them in
+for file in ./tests/*; do 
+    # get just the filename
+    filename="$(basename -- "$file")"
+
+    # get the extension
+    extension="${filename##*.}"
+
+    # extract the filename without extension
+    filename="${filename%.*}"
+
+    # make sure it's a jmx file
+    if [[ -f "$file" && "$extension" = "jmx" ]]; then
+        block_print "Running "$filename""
+
+        # run the jmeter test
+        jmeter -n -t "$file" -l "$ARTIFACTS_DIR"/"$filename.csv" -e -o "$TEST_REPORTS"/"$filename"
+    fi 
+done

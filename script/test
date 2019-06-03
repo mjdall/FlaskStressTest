@@ -1,15 +1,25 @@
-#!/bin/sh
+#!/bin/bash
+
+wait_for_server() {
+    APP_URL="$1"
+    TIMEOUT="$2"
+    echo "\nwaiting "$TIMEOUT" seconds for server to be active\n"
+
+    # wait 60s for the server to start up and return a 200 status code from the isPrime route
+    timeout "$TIMEOUT" bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' "$APP_URL/isPrime/1")" != "200" ]]; do sleep 5; done' \
+        && SUCCESS="true" \
+        || echo "server didn't start in time\n"
+}
 
 HOST="127.0.0.1"
 PORT="13361"
 SERVER_HEALTH_TIMEOUT="60"
 
-export FLASK_ENV=testing
+export FLASK_ENV="testing"
 export APP_URL="http://$HOST:$PORT"
 
 # if running, pull it down
-docker-compose down || true
-docker-compose build && docker-compose up -d
+./script/deploy
 
 docker build ./prime_server_test/ -t prime_server_test
 
@@ -17,20 +27,21 @@ docker build ./prime_server_test/ -t prime_server_test
 SUCCESS="false"
 EXIT_CODE="1"
 
-echo "\nwaiting "$SERVER_HEALTH_TIMEOUT" seconds for server to be active\n"
-
-# wait 60s for the server to start up and return a 200 status code from the isPrime route
-timeout "$SERVER_HEALTH_TIMEOUT" bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' "$APP_URL/isPrime/1")" != "200" ]]; do sleep 5; done' \
-    && SUCCESS="true" \
-    || echo "server didn't start in time\n"
+wait_for_server "$APP_URL" "$SERVER_HEALTH_TIMEOUT"
 
 if [ "$SUCCESS" = true ]; then
     docker run -it --network="host" -e APP_URL="$APP_URL" prime_server_test:latest && EXIT_CODE="0" || SUCCESS="true"
 fi
 
-if [ "$EXIT_CODE" = "0" ]; then
+# need to be able to with sudo
+# docker volumes become owned by root
+if [[ "$EXIT_CODE" -eq "0" && "$EUID" -eq "0" ]]; then
     echo "\nrunning strtess tests\n"
-    ./script/stress-test || EXIT_CODE="1"
+    # tear down deployment before stress test
+    ./script/deploy
+    wait_for_server "$APP_URL" "$SERVER_HEALTH_TIMEOUT"
+
+    sudo ./script/stress-test -f || EXIT_CODE="1"
 fi
 
 docker-compose down

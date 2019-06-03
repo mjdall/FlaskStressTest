@@ -1,0 +1,7 @@
+#!/bin/sh
+
+ARTIFACTS="./stress_test/artifacts"
+TEST_REPORTS="./stress_test/artifacts/test_reports"
+rm -r "$ARTIFACTS"
+
+mkdir -p "$TEST_REPORTS"

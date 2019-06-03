@@ -1,0 +1,34 @@
+#!/bin/bash
+
+open_url() {
+    URL="$1"
+    EXIT_CODE="1"
+    # if BROWSER is set
+    if [[ -x $BROWSER ]]; then
+        nohup "$BROWSER" "$URL" > /dev/null 2>&1
+        EXIT_CODE="0"
+    fi
+
+    # check if xdg-open or gnome-open is an option
+    BROWSER_PATH="$(which xdg-open || which gnome-open)"
+
+    # couldn't find a browser
+    if [[ -z "$BROWSER_PATH" ]]; then
+        echo "couldn't find browser to open reports in"
+        exit "$EXIT_CODE"
+    fi
+
+    # open with xdg-open or gnome-open
+    nohup "$BROWSER_PATH" "$URL" > /dev/null 2>&1
+    exit "0"
+}
+
+REPORT_DIR="$1"
+
+for dir in "$REPORT_DIR"/*; do
+    index_file=""$dir"/index.html"
+    if [[ -d "$dir" && -f "$index_file" ]]; then
+        echo "opening \""$(basename "$dir")"\" in browser"
+        open_url "$index_file" &
+    fi
+done
