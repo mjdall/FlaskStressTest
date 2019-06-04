@@ -13,6 +13,7 @@ fi
 
 ARTIFACT_DIR=""$(pwd)"/stress_test/artifacts"
 REPORT_DIR=""$ARTIFACT_DIR"/test_reports"
+mkdir -p "$REPORT_DIR"
 
 # we need to run as sudo to get vol perms back
 CHOWN_USER="$(cut -d/ -f3 <<<$ARTIFACT_DIR)"

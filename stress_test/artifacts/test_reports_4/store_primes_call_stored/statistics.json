@@ -1,0 +1,47 @@
+{
+  "storedPrimes" : {
+    "transaction" : "storedPrimes",
+    "sampleCount" : 1195,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 2450.1347280334735,
+    "minResTime" : 2.0,
+    "maxResTime" : 3696.0,
+    "pct1ResTime" : 3298.0,
+    "pct2ResTime" : 3397.0,
+    "pct3ResTime" : 3593.04,
+    "throughput" : 19.28757041173717,
+    "receivedKBytesPerSec" : 4.332169135448779,
+    "sentKBytesPerSec" : 2.4674528554077826
+  },
+  "Total" : {
+    "transaction" : "Total",
+    "sampleCount" : 1295,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 2261.949034749037,
+    "minResTime" : 1.0,
+    "maxResTime" : 3696.0,
+    "pct1ResTime" : 3296.0,
+    "pct2ResTime" : 3396.0,
+    "pct3ResTime" : 3588.2,
+    "throughput" : 18.03696533281335,
+    "receivedKBytesPerSec" : 3.9668048456063625,
+    "sentKBytesPerSec" : 2.304606977833336
+  },
+  "Call isPrime/ with 0-100" : {
+    "transaction" : "Call isPrime/ with 0-100",
+    "sampleCount" : 100,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 13.129999999999999,
+    "minResTime" : 1.0,
+    "maxResTime" : 68.0,
+    "pct1ResTime" : 63.900000000000006,
+    "pct2ResTime" : 65.94999999999999,
+    "pct3ResTime" : 68.0,
+    "throughput" : 20.682523267838675,
+    "receivedKBytesPerSec" : 3.391206695966908,
+    "sentKBytesPerSec" : 2.6034934074457086
+  }
+}

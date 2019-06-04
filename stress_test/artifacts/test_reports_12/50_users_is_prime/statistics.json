@@ -1,0 +1,32 @@
+{
+  "Total" : {
+    "transaction" : "Total",
+    "sampleCount" : 1911,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 1339.2469911041344,
+    "minResTime" : 1.0,
+    "maxResTime" : 2093.0,
+    "pct1ResTime" : 1804.0,
+    "pct2ResTime" : 1900.0,
+    "pct3ResTime" : 1997.0,
+    "throughput" : 31.03179500503394,
+    "receivedKBytesPerSec" : 5.242676304561398,
+    "sentKBytesPerSec" : 4.151714761415674
+  },
+  "Call isPrime/2147483647" : {
+    "transaction" : "Call isPrime/2147483647",
+    "sampleCount" : 1911,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 1339.2469911041344,
+    "minResTime" : 1.0,
+    "maxResTime" : 2093.0,
+    "pct1ResTime" : 1804.0,
+    "pct2ResTime" : 1900.0,
+    "pct3ResTime" : 1997.0,
+    "throughput" : 31.03179500503394,
+    "receivedKBytesPerSec" : 5.242676304561398,
+    "sentKBytesPerSec" : 4.151714761415674
+  }
+}

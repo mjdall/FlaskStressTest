@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ ! -z "$FLASK_ENV" ]]; then
+if [[ -z "$FLASK_ENV" ]]; then
     export FLASK_ENV=production
 fi
 

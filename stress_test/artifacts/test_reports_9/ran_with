@@ -1,0 +1,14 @@
+version: '2.2'
+services:
+  prime_server:
+    build: ./prime_server
+    ports:
+      - "13361:5000"
+    environment:
+      - FLASK_ENV=${FLASK_ENV}
+    restart: on-failure
+  redis:
+      image: "redis:alpine"
+      ports:
+        - "6379:6379"
+      restart: on-failure
